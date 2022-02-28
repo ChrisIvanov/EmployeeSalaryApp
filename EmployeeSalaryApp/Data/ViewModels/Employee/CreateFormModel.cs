@@ -17,6 +17,7 @@
         public string? Position { get; set; }
 
         [Required]
+        [Range(650, 10000)]
         public decimal SalaryGross { get; set; }
     }
 }

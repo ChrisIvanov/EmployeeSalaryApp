@@ -12,6 +12,7 @@
         [MaxLength(20, ErrorMessage = "Name is too long.")]
         public string? LastName { get; set; }
 
+        [Range(650, 10000)]
         public decimal SalaryGross { get; set; }
     }
 }

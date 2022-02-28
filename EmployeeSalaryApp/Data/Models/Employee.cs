@@ -25,6 +25,7 @@
         [Required]
         [Display(Name = "Gross Salary")]
         [Column(TypeName = "decimal(18, 2)")]
+        [Range(650, 10000)]
         public decimal SalaryGrossValue { get; set; }
 
         [Display(Name = "Net Salary")]
