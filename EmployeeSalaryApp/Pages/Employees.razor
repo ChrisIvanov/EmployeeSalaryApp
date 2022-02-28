@@ -1,0 +1,111 @@
+﻿@page "/Employees"
+
+@using System.Linq.Expressions
+
+@using EmployeeSalaryApp.Data.ViewModels.Employee
+@using EmployeeSalaryApp.Services.Contracts.Employee
+
+@inject IEmployeeService employeeService
+
+<h3>Employees</h3>
+
+<p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Postion</th>
+                <th scope="col">Gross Salary</th>
+                <th scope="col">Net Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                @if (counter > employees.Count())
+                {
+                    counter = 1;                    
+                }
+
+                <tr>
+                    <th scope="row">@counter</th>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.Position</td>
+                    <td>@employee.SalaryGross</td>
+                    <td>@employee.SalaryNet</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => OnDeleteData(employee.Id)">Delete</button>
+                    </td>
+                </tr>
+
+                counter++;
+            }
+        </tbody>
+    </table>
+</p>
+
+
+
+
+<h3>Add New Employee</h3>
+
+<div class="row col-md-2">
+    First Name:
+    <input type="text"
+        class="form-control"
+        @bind-value="@createEmplopyeeForm.FirstName" />
+        
+</div>
+<div class="row col-md-2">
+    Last Name:
+        <input type="text"
+        class="form-control"
+        @bind-value="@createEmplopyeeForm.LastName" />
+</div>
+<div class="row col-md-2">
+    Position(Optional):
+    <input type="text"
+    class="form-control"
+    @bind-value="@createEmplopyeeForm.Position" />
+</div>
+<div class="row col-md-2">
+    Gross Salary:
+        <input type="text"
+        class="form-control"
+        @bind-value="@createEmplopyeeForm.SalaryGross" />
+</div>
+<div>
+    <button type="submit" class="btn btn-outline-success btn-sm" @onclick="() => OnCreateAsync(createEmplopyeeForm)">Create Employee</button>
+</div>
+
+@code {
+    private int counter = 1;
+
+    private IEnumerable<GetViewModel> employees;
+    private UpdateFormModel updateEmplopyeeForm;
+    private CreateFormModel createEmplopyeeForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = employeeService.GetAllAsync();
+        updateEmplopyeeForm = new UpdateFormModel();
+        createEmplopyeeForm = new CreateFormModel();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task OnCreateAsync(CreateFormModel addTaxForm)
+    {
+        await employeeService.CreateAsync(addTaxForm);
+        this.StateHasChanged();
+    }
+
+    protected async Task OnDeleteData(string id)
+    {
+        await employeeService.DeleteAsync(id);
+        await InvokeAsync(StateHasChanged);
+    }
+}

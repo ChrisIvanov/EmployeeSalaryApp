@@ -1,0 +1,70 @@
+﻿@page "/Employee/Create"
+
+@using EmployeeSalaryApp.Data.ViewModels.Employee
+@using EmployeeSalaryApp.Services.Contracts.Employee
+
+@inject IEmployeeService employeeService
+
+<h3>Create Employee</h3>
+
+<p>
+    <table class="table">
+        <tr class="row col-md-2">
+            <td>
+                <input type="text"
+                       class="form-control"
+                       placeholder="e.g. John"
+                       @bind-value="@employee.FirstName" />
+            </td>
+        </tr>
+        <tr class="row col-md-2">
+            <td>
+                <input type="text"
+                       class="form-control"
+                       placeholder="e.g. Smith"
+                       @bind-value="@employee.LastName" />
+            </td>
+        </tr>
+        <tr class="row col-md-2">
+            <td>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Optional"
+                       @bind-value="@employee.Position" />
+            </td>
+        </tr>
+        <tr class="row col-md-2">
+            <td>
+                <input type="number"
+                       class="form-control"
+                       placeholder="Enter email"
+                       @bind-value="@employee.SalaryGross" />
+            </td>
+        </tr>
+        <tr class="row col-md-2">
+            <td><button type="submit" class="btn btn-outline-success" @onclick="@OnSubmitData">Submit</button></td>
+        </tr>
+    </table>
+</p>
+
+@code {
+    private CreateFormModel employee = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        employee = new CreateFormModel
+            {
+                FirstName = "",
+                LastName = "",
+                Position = "",
+                SalaryGross = 0
+            };
+    }
+
+    protected void OnSubmitData()
+    {
+        employeeService.CreateAsync(employee);
+    }
+}

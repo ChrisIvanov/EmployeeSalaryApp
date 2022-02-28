@@ -1,0 +1,117 @@
+﻿@page "/Taxes"
+
+@using EmployeeSalaryApp.Data.ViewModels.Tax
+@using EmployeeSalaryApp.Services.Contracts.TaxCalculator
+
+@inject NavigationManager NavManager
+@inject ITaxService taxService
+
+<h3>Taxes</h3>
+
+<p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tax Type</th>
+                <th scope="col">Tax Rate (%)</th>
+                <th scope="col">Add text to change</th>
+                <th scope="col">Add number to change</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tax in taxes)
+            {
+                <tr>
+                    <th scope="row">@counter</th>
+                    <td>@tax.TaxType</td>
+                    <td>@tax.TaxRate %</td>
+                    <td>
+                        <input type="text"
+                           class="form-control"
+                           placeholder="@tax.TaxType"
+                           @bind-value="editTaxForm.TaxType" />
+                    </td>
+                    <td>
+                        <input type="number"
+                           class="form-control"
+                           @bind-value="@editTaxForm.TaxRate" />
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @onclick="() => OnUpdateData(editTaxForm, tax.Id)">Save changes</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => OnDeleteData(tax.Id)">Delete</button>
+                    </td>
+                </tr>
+
+                counter++;
+            }
+            @{
+                counter = 1;
+            }
+        </tbody>
+    </table>
+</p>
+
+<h3>Add New Tax</h3>
+<p>
+    <table>
+        <tr class="row">
+            <td>
+                Tax type:
+                <input type="text"
+                       class="form-control"
+                       @bind-value="@addTaxForm.TaxType" />
+            </td>
+        </tr>
+        <tr class="row">
+            <td>
+                Tax Rate:
+                <input type="number"
+                       class="form-control"
+                       @bind-value="@addTaxForm.TaxRate" />
+            </td>
+        </tr>
+        <tr class="row">
+            <td>
+                <button type="submit" class="btn btn-outline-success btn-sm" @onclick="() => OnCreate(addTaxForm)">Create Tax</button>
+            </td>
+        </tr>
+    </table>
+</p>
+
+
+@code {
+    private int counter = 1;
+    private IEnumerable<GetViewModel> taxes;
+    private EditFormModel editTaxForm;
+    private AddFormModel addTaxForm;
+
+    protected override void OnInitialized()
+    {
+        taxes = taxService.GetAllAsync();
+        editTaxForm = new EditFormModel();
+        addTaxForm = new AddFormModel();
+
+        base.OnInitialized();
+    }
+
+    protected async Task OnCreate(AddFormModel addTaxForm)
+    {
+        await taxService.AddAsync(addTaxForm);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected async Task OnUpdateData(EditFormModel model, int id)
+    {
+        await taxService.UpdateAsync(model, id);
+    }
+
+    protected async Task OnDeleteData(int id)
+    {
+        await taxService.DeleteAsync(id);
+    }
+}
